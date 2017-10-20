@@ -77,15 +77,16 @@ export RANLIB=$($NDK_ROOT/ndk-which ranlib)
 
 export LIBS="-lssl -lcrypto"
 export LDFLAGS="-L$SCRIPTPATH/obj/local/armeabi"
-./configure --host=arm-linux-androideabi \
-  --target=arm-linux-androideabi \
-  --with-ssl=$SSLPATH \
-  --enable-threaded-resolver \
+
+BASE_CONFIGURE_OPTS=" \
   --enable-cookies \
   --enable-http \
   --enable-https \
   --enable-ipv6 \
+  --enable-optimize \
   --enable-static \
+  --enable-symbol-hiding \
+  --enable-threaded-resolver \
   --disable-manual \
   --disable-dict \
   --disable-file \
@@ -102,7 +103,39 @@ export LDFLAGS="-L$SCRIPTPATH/obj/local/armeabi"
   --disable-telnet \
   --disable-tftp \
   --without-librtmp \
-  --without-libssh2
+  --without-libssh2 \
+  "
+
+BUILD_TYPE_CONFIGURE_OPTS=""
+case "${BUILD_TYPE}" in
+  Debug )
+    BUILD_TYPE_CONFIGURE_OPTS="--enable-curldebug --enable-verbose --enable-warnings "
+    ;;
+  RelWithDebInfo )
+    BUILD_TYPE_CONFIGURE_OPTS="--enable-curldebug --disable-verbose --enable-warnings "
+    ;;
+  Release )
+    BUILD_TYPE_CONFIGURE_OPTS="--disable-curldebug --disable-verbose --disable-warnings "
+    ;;
+esac
+
+PLATFORM_CONFIGURE_OPTS=" \
+  --host=arm-linux-androideabi \
+  --target=arm-linux-androideabi \
+  --with-ssl=$SSLPATH \
+"
+
+CURL_CONFIGURE_OPTS="\
+  ${PLATFORM_CONFIGURE_OPTS} \
+  ${BASE_CONFIGURE_OPTS} \
+  ${BUILD_TYPE_CONFIGURE_OPTS} \
+"
+
+echo '@@@'
+echo ${CURL_CONFIGURE_OPTS}
+echo '###'
+
+./configure ${CURL_CONFIGURE_OPTS}
 
 EXITCODE=$?
 if [ $EXITCODE -ne 0 ]; then
@@ -129,7 +162,9 @@ for p in ${PLATFORMS[*]}; do
   STRIP=$($SCRIPTPATH/ndk-which strip $p)
 
   SRC=$SCRIPTPATH/obj/local/$p/libcurl.a
-  DEST=$DESTDIR/$p/libcurl.a
+  DEST_DIR=$DESTDIR/$p/${BUILD_TYPE}
+  DEST=$DEST_DIR/libcurl.a
+  mkdir -p ${DEST_DIR}
 
   if [ -z "$STRIP" ]; then
     echo "WARNING: Could not find 'strip' for $p"
