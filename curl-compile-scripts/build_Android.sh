@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGET=android-9
+TARGET=android-14
 
 real_path() {
   [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -34,9 +34,9 @@ cd $SSLPATH
 ./Configure android no-asm no-shared no-cast no-idea no-camellia no-whirpool
 EXITCODE=$?
 if [ $EXITCODE -ne 0 ]; then
-	echo "Error running the ssl configure program"
-	cd $PWD
-	exit $EXITCODE
+  echo "Error running the ssl configure program"
+  cd $PWD
+  exit $EXITCODE
 fi
 
 #Build static libssl and libcrypto, required for cURL's configure
@@ -44,25 +44,25 @@ cd $SCRIPTPATH
 $NDK_ROOT/ndk-build -j$JOBS -C $SCRIPTPATH ssl crypto
 EXITCODE=$?
 if [ $EXITCODE -ne 0 ]; then
-	echo "Error building the libssl and libcrypto"
-	cd $PWD
-	exit $EXITCODE
+  echo "Error building the libssl and libcrypto"
+  cd $PWD
+  exit $EXITCODE
 fi
 
 #Configure cURL
 cd $CURLPATH
 if [ ! -x "$CURLPATH/configure" ]; then
-	echo "Curl needs external tools to be compiled"
-	echo "Make sure you have autoconf, automake and libtool installed"
+  echo "Curl needs external tools to be compiled"
+  echo "Make sure you have autoconf, automake and libtool installed"
 
-	./buildconf
+  ./buildconf
 
-	EXITCODE=$?
-	if [ $EXITCODE -ne 0 ]; then
-		echo "Error running the buildconf program"
-		cd $PWD
-		exit $EXITCODE
-	fi
+  EXITCODE=$?
+  if [ $EXITCODE -ne 0 ]; then
+    echo "Error running the buildconf program"
+    cd $PWD
+    exit $EXITCODE
+  fi
 fi
 
 export SYSROOT="$NDK_ROOT/platforms/$TARGET/arch-arm"
@@ -77,14 +77,32 @@ export RANLIB=$($NDK_ROOT/ndk-which ranlib)
 
 export LIBS="-lssl -lcrypto"
 export LDFLAGS="-L$SCRIPTPATH/obj/local/armeabi"
-./configure --host=arm-linux-androideabi --target=arm-linux-androideabi \
-            --with-ssl=$SSLPATH \
-            --enable-static \
-            --disable-shared \
-            --disable-verbose \
-            --enable-threaded-resolver \
-            --enable-libgcc \
-            --enable-ipv6
+./configure --host=arm-linux-androideabi \
+  --target=arm-linux-androideabi \
+  --with-ssl=$SSLPATH \
+  --enable-threaded-resolver \
+  --enable-cookies \
+  --enable-http \
+  --enable-https \
+  --enable-ipv6 \
+  --enable-static \
+  --disable-manual \
+  --disable-dict \
+  --disable-file \
+  --disable-ftp \
+  --disable-gopher \
+  --disable-imap \
+  --disable-ldap \
+  --disable-ldaps \
+  --disable-pop3 \
+  --disable-rtsp \
+  --disable-shared \
+  --disable-smb \
+  --disable-smtp \
+  --disable-telnet \
+  --disable-tftp \
+  --without-librtmp \
+  --without-libssh2
 
 EXITCODE=$?
 if [ $EXITCODE -ne 0 ]; then
@@ -93,27 +111,17 @@ if [ $EXITCODE -ne 0 ]; then
   exit $EXITCODE
 fi
 
-#Patch headers for 64-bit archs
-cd "$CURLPATH/include/curl"
-sed 's/#define CURL_SIZEOF_LONG 4/\
-#ifdef __LP64__\
-#define CURL_SIZEOF_LONG 8\
-#else\
-#define CURL_SIZEOF_LONG 4\
-#endif/'< curlbuild.h > curlbuild.h.temp
-
-mv curlbuild.h.temp curlbuild.h
-
 #Build cURL
 $NDK_ROOT/ndk-build -j$JOBS -C $SCRIPTPATH curl
 EXITCODE=$?
 if [ $EXITCODE -ne 0 ]; then
-	echo "Error running the ndk-build program"
-	exit $EXITCODE
+  echo "Error running the ndk-build program"
+  exit $EXITCODE
 fi
 
 #Strip debug symbols and copy to the prebuilt folder
-PLATFORMS=(arm64-v8a x86_64 mips64 armeabi armeabi-v7a x86 mips)
+#PLATFORMS=(armeabi armeabi-v7a arm64-v8a x86 x86_64 mips mips64)
+PLATFORMS=(armeabi-v7a arm64-v8a x86 x86_64)
 DESTDIR=$SCRIPTPATH/../prebuilt-with-ssl/android
 
 for p in ${PLATFORMS[*]}; do
@@ -132,8 +140,8 @@ for p in ${PLATFORMS[*]}; do
 done
 
 #Copying cURL headers
-cp -R $CURLPATH/include $DESTDIR/
-rm $DESTDIR/include/curl/.gitignore
+#cp -R $CURLPATH/include $DESTDIR/
+#rm $DESTDIR/include/curl/.gitignore
 
 cd $PWD
 exit 0

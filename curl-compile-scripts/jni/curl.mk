@@ -32,7 +32,8 @@ CURL_CSOURCES := \
 	vtls/polarssl.c vtls/schannel.c vtls/vtls.c \
   vauth/cleartext.c vauth/cram.c vauth/digest.c vauth/digest_sspi.c \
 	vauth/krb5_gssapi.c vauth/krb5_sspi.c vauth/ntlm_sspi.c vauth/ntlm.c \
-  vauth/oauth2.c vauth/spnego_gssapi.c vauth/spnego_sspi.c vauth/vauth.c
+  vauth/oauth2.c vauth/spnego_gssapi.c vauth/spnego_sspi.c vauth/vauth.c \
+	mime.c
 CURL_LOCAL_SRC_FILES := $(addprefix ../../curl/lib/,$(CURL_CSOURCES))
 CURL_LOCAL_C_INCLUDES += \
   $(LOCAL_PATH)/../../curl/include \
