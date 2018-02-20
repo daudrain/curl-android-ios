@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGET=android-14
+TARGET=android-21
 
 real_path() {
   [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -76,7 +76,8 @@ export AR=$($NDK_ROOT/ndk-which ar)
 export RANLIB=$($NDK_ROOT/ndk-which ranlib)
 
 export LIBS="-lssl -lcrypto"
-export LDFLAGS="-L$SCRIPTPATH/obj/local/armeabi"
+#export LDFLAGS="-L$SYSROOT/usr/lib -L$SCRIPTPATH/obj/local/armeabi"
+export LDFLAGS="-L$SYSROOT/usr/lib -L$SCRIPTPATH/obj/local/armeabi"
 
 BASE_CONFIGURE_OPTS=" \
   --enable-cookies \
