@@ -6,7 +6,12 @@ import android.util.Log;
 
 public class TestActivity extends Activity{
 	static {
-		System.loadLibrary("testlibrary");
+		try {
+			System.loadLibrary("testlibrary");
+			Log.i("TestActivity", "testlibrary  loaded");
+		} catch (Exception e) {
+			Log.e("TestActivity", "Failed loading testlibrary", e);
+		}
 	}
 	
 	@Override

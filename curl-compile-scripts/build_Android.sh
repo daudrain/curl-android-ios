@@ -76,7 +76,7 @@ export AR=$($NDK_ROOT/ndk-which ar)
 export RANLIB=$($NDK_ROOT/ndk-which ranlib)
 
 export LIBS="-lssl -lcrypto"
-export LDFLAGS="-L$SYSROOT/usr/lib -L$SCRIPTPATH/obj/local/armeabi"
+export LDFLAGS="-L$SYSROOT/usr/lib -L$SCRIPTPATH/obj/local/armeabi-v7a"
 
 BASE_CONFIGURE_OPTS=" \
   --enable-cookies \
@@ -153,7 +153,6 @@ if [ $EXITCODE -ne 0 ]; then
 fi
 
 #Strip debug symbols and copy to the prebuilt folder
-#PLATFORMS=(armeabi armeabi-v7a arm64-v8a x86 x86_64 mips mips64)
 PLATFORMS=(armeabi-v7a arm64-v8a x86 x86_64)
 DESTDIR=$SCRIPTPATH/../prebuilt-with-ssl/android
 

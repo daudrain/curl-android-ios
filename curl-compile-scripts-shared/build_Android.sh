@@ -83,15 +83,13 @@ if [ ! -d "$SCRIPTPATH/obj/local/arm64-v8a" ]; then
 fi
 
 export LIBS="-lssl -lcrypto"
-export LDFLAGS="-L$SYSROOT/usr/lib -L$SCRIPTPATH/obj/local/arm64-v8a"
+export LDFLAGS="-L$SYSROOT/usr/lib -L$SCRIPTPATH/obj/local/armeabi-v7a"
 
 BASE_CONFIGURE_OPTS=" \
   --enable-cookies \
   --enable-http \
-  --enable-https \
   --enable-ipv6 \
   --enable-optimize \
-  --enable-static \
   --enable-symbol-hiding \
   --enable-threaded-resolver \
   --disable-manual \
@@ -105,6 +103,7 @@ BASE_CONFIGURE_OPTS=" \
   --disable-pop3 \
   --disable-rtsp \
   --enable-shared \
+  --disable-static \
   --disable-smb \
   --disable-smtp \
   --disable-telnet \
@@ -113,18 +112,8 @@ BASE_CONFIGURE_OPTS=" \
   --without-libssh2 \
   "
 
-BUILD_TYPE_CONFIGURE_OPTS=""
-case "${BUILD_TYPE}" in
-  Debug )
-    BUILD_TYPE_CONFIGURE_OPTS="--enable-curldebug --enable-verbose --enable-warnings "
-    ;;
-  RelWithDebInfo )
-    BUILD_TYPE_CONFIGURE_OPTS="--enable-curldebug --disable-verbose --enable-warnings "
-    ;;
-  Release )
-    BUILD_TYPE_CONFIGURE_OPTS="--disable-curldebug --disable-verbose --disable-warnings "
-    ;;
-esac
+BUILD_TYPE_CONFIGURE_OPTS="--disable-curldebug --disable-verbose --disable-warnings"
+
 
 PLATFORM_CONFIGURE_OPTS=" \
   --host=arm-linux-androideabi \
@@ -172,12 +161,12 @@ for p in ${PLATFORMS[*]}; do
   DEST=$DEST_DIR/libcurl.so
   mkdir -p ${DEST_DIR}
 
-  if [ -z "$STRIP" ]; then
-    echo "WARNING: Could not find 'strip' for $p"
+  #if [ -z "$STRIP" ]; then
+  #  echo "WARNING: Could not find 'strip' for $p"
     cp $SRC $DEST
-  else
-    $STRIP $SRC --strip-debug -o $DEST
-  fi
+  #else
+  #  $STRIP $SRC --strip-debug -o $DEST
+  #fi
 done
 
 #Copying cURL headers

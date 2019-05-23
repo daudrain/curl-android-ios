@@ -17,6 +17,7 @@
 
 #ifdef ANDROID
 	#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "TestLibrary", __VA_ARGS__))
+	#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "TestLibrary", __VA_ARGS__))
 #else
 	#define LOGI(...) printf(__VA_ARGS__)
 #endif
@@ -35,7 +36,8 @@ BOOL downloadUrl(const char* url, LPCURL_DOWNLOAD_OBJECT downloadObject ) {
 
 	CURLcode res = curl_easy_perform(curl);
 	if (res != CURLE_OK){
-	    LOGI("CURL failed with error code %d", res);
+	    const char * ce = curl_easy_strerror(res);
+	    LOGI("CURL failed with error code %d[%s]", res, ce);
 	}
 	curl_easy_cleanup(curl);
 	return res == CURLE_OK;
@@ -78,10 +80,13 @@ size_t curlCallback(char *data, size_t size, size_t count, void* userdata) {
 extern "C" 
 {
 	JNIEXPORT jbyteArray JNICALL
-	Java_com_example_androidtest_TestActivity_downloadUrl(JNIEnv* env, jobject obj, jstring url ){
+	Java_com_example_androidtestshared_TestActivity_downloadUrl(JNIEnv* env, jobject obj, jstring url ){
+	    LOGI( "enter downloadURL");
 		const char* url_c = env->GetStringUTFChars(url, NULL);
-		if (!url_c)
+		if (!url_c) {
+		    LOGE( "Fail getting url");
 			return NULL;
+		}
 
 		LOGI( "Download URL: %s", url_c );
 		CURL_DOWNLOAD_OBJECT* downloadObject = new CURL_DOWNLOAD_OBJECT;
