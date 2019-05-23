@@ -4,8 +4,8 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE := curl-prebuilt
 LOCAL_SRC_FILES := \
-  ../../../../../prebuilt-with-ssl/android/$(TARGET_ARCH_ABI)/Release/libcurl.a
-include $(PREBUILT_STATIC_LIBRARY)
+  ../../../../../prebuilt-with-ssl/android/$(TARGET_ARCH_ABI)/libcurl.so
+include $(PREBUILT_SHARED_LIBRARY)
 ################################################################################
 
 #Test Library

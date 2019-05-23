@@ -1,4 +1,4 @@
-package com.example.androidtest;
+package com.example.androidtestshared;
 
 import android.app.Activity;
 import android.os.Bundle;

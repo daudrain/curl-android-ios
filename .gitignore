@@ -1,5 +1,6 @@
 .directory
 curl-compile-scripts/obj
+curl-compile-scripts-shared/obj
 test-android-project/bin
 test-android-project/gen
 test-android-project/project.properties
@@ -10,3 +11,7 @@ test-android-project/libs
 libcurl-*.a
 xcuserdata
 Makefile
+.vscode
+.classpath
+.project
+.settings/

@@ -19,13 +19,44 @@ Test projects are also provided for both iOS and Android.
 xcode-select --install
 ```
 
-## Building for Android:
+## Building for Android
 * Download Android NDK
+
+### Curl static library
+
+#### Build static library
 ```
 cd curl-android-ios/curl-compile-scripts
 export NDK_ROOT=PATH_WHERE_NDK_IS
 ./build_Android.sh
 ```
+
+#### Test static library
+
+* Open `test-android-project` with Android Studio
+* Build it
+* Run it
+* Filter logcat with `TestActivity`
+
+Some logs should indicate some bytes have been downloaded.
+
+### Curl shared library
+
+#### Build shared library
+```
+cd curl-android-ios/curl-compile-scripts-shared
+export NDK_ROOT=PATH_WHERE_NDK_IS
+./build_Android.sh
+```
+
+#### Test shared library
+
+* Open `test-android-shared-project` with Android Studio
+* Build it
+* Run it
+* Filter logcat with `TestActivity`
+
+Some logs should indicate some bytes have been downloaded.
 
 ## Building for iOS
 ```
